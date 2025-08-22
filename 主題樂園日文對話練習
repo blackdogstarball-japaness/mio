@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主題樂園日文對話練習</title>
+    <!-- 使用 Tailwind CSS 加速開發與響應式設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 800px;
+        }
+        /* 隱藏預設的 input number 箭頭 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-10">
+    <div id="app" class="container bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-200">
+        <!-- App Header (應用程式標題) -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">主題樂園日文對話練習</h1>
+            <p class="text-gray-500 text-lg">選擇一個情境開始學習</p>
+        </header>
+
+        <!-- Main content area (主要內容區塊) -->
+        <main id="main-content">
+            <!-- 內容會由 JavaScript 動態生成 -->
+        </main>
+    </div>
+
+    <script>
+        // App Data: 應用程式的所有資料結構
+        // 包含所有情境、對話內容與測驗題目
+        const appData = {
+            scenarios: [
+                {
+                    id: 'queueing',
+                    title: '遊樂設施排隊',
+                    image: 'https://placehold.co/600x400/87CEEB/ffffff?text=Ride+Line',
+                    dialogue: [
+                        { speaker: '遊客', text: 'あの、すみません。列はどこですか？' },
+                        { speaker: '工作人員', text: 'はい、列はあちらです。' },
+                        { speaker: '遊客', text: 'どのくらい待ちますか？', otherPhrases: ['待ち時間はどのくらいですか？', 'どれくらい待つでしょうか？'] },
+                        { speaker: '工作人員', text: '約30分お待ちいただきます。' },
+                        { speaker: '遊客', text: 'ありがとうございます！' }
+                    ],
+                    quizzes: [
+                        { question: 'すみません、___はどこですか？ (廁所)', answer: 'お手洗い', hint: 'お+手+洗い' },
+                        { question: '___はどのくらいですか？ (等待時間)', answer: '待ち時間', hint: '等待+時間' },
+                        { question: 'このアトラクションは___ですか？ (可怕)', answer: '怖い', hint: 'こ+わ+い' }
+                    ]
+                },
+                {
+                    id: 'restaurant',
+                    title: '餐廳點餐',
+                    image: 'https://placehold.co/600x400/FFA07A/ffffff?text=Restaurant',
+                    dialogue: [
+                        { speaker: '店員', text: 'いらっしゃいませ。何名様ですか？' },
+                        { speaker: '遊客', text: '大人2人と子ども1人です。' },
+                        { speaker: '店員', text: 'かしこまりました。こちらへどうぞ。' },
+                        { speaker: '店員', text: 'ご注文がお決まりになりましたら、お呼びください。' },
+                        { speaker: '遊客', text: 'はい。' },
+                        { speaker: '遊客', text: 'すみません、お子様ランチをひとつお願いします。' },
+                        { speaker: '店員', text: 'かしこまりました。ドリンクは何になさいますか？' },
+                        { speaker: '遊客', text: 'オレンジジュースでお願いします。' },
+                        { speaker: '店員', text: '承知しました。' }
+                    ],
+                    quizzes: [
+                        { question: '___、何名様ですか？ (歡迎光臨)', answer: 'いらっしゃいませ', hint: 'い+ら+っしゃ+い+ま+せ' },
+                        { question: '大人2人と___1人です。 (兒童)', answer: '子ども', hint: 'こ+ど+も' },
+                        { question: 'ご注文がお決まりになりましたら、___ください。 (請叫我們)', answer: 'お呼び', hint: 'お+よ+び' },
+                    ]
+                },
+                {
+                    id: 'lost-and-found',
+                    title: '尋找失物',
+                    image: 'https://placehold.co/600x400/90EE90/ffffff?text=Lost+%26+Found',
+                    dialogue: [
+                        { speaker: '遊客', text: 'すみません、落とし物をしたのですが。', otherPhrases: ['忘れ物をしました。'] },
+                        { speaker: '工作人員', text: 'どういった物を落とされましたか？' },
+                        { speaker: '遊客', text: '黒い財布です。観覧車の近くで落としたと思います。' },
+                        { speaker: '工作人員', text: 'かしこまりました。確認いたしますので、少々お待ちください。' },
+                        { speaker: '工作人員', text: '見つかりました。では、こちらの用紙にご記入ください。' },
+                        { speaker: '遊客', text: 'はい。（名前や住所などを記入）' },
+                        { speaker: '工作人員', text: 'ありがとうございます。こちらがお財布です。中身をご確認ください。' },
+                        { speaker: '遊客', text: 'はい、大丈夫です。助かりました。' },
+                        { speaker: '工作人員', text: 'よかったです。また何かありましたらお声がけください。' }
+                    ],
+                    quizzes: [
+                        { question: '___をしました。 (我遺失了)', answer: '落とし物', hint: '落+し+物' },
+                        { question: '___のスマートフォンをなくしました。 (黑色的)', answer: '黒い', hint: 'く+ろ+い' },
+                        { question: '___はどこですか？ (失物招領處)', answer: '落とし物センター', hint: '落+し+物+center' }
+                    ]
+                },
+                {
+                    id: 'parade-time',
+                    title: '詢問遊行時間',
+                    image: 'https://placehold.co/600x400/FFD700/ffffff?text=Parade',
+                    dialogue: [
+                        { speaker: '遊客', text: 'すみません、パレードはどこで見られますか？' },
+                        { speaker: '工作人員', text: 'パレードルートはマップに載っています。こちらをご覧ください。' },
+                        { speaker: '遊客', text: 'はい。（地圖をのぞき込む）' },
+                        { speaker: '工作人員', text: 'この赤い線がパレードのルートです。スタートはここ、ゴールはこの広場になります。' },
+                        { speaker: '遊客', text: 'なるほど。おすすめの場所はありますか？' },
+                        { speaker: '工作人員', text: '人気なのはこの広場ですが、早めに行かないと混みますので、30分前には行かれるといいですよ。' },
+                        { speaker: '遊客', text: '分かりました。ありがとうございます。' },
+                        { speaker: '工作人員', text: 'どうぞ楽しんでください。' }
+                    ],
+                    quizzes: [
+                        { question: '今日のパレードは___ですか？ (幾點開始)', answer: '何時から', hint: '何+時+から' },
+                        { question: '___はどこですか？ (遊行路線)', answer: 'パレードルート', hint: 'parade route' },
+                        { question: '写真___撮ってもいいですか？ (可以拍照嗎)', answer: 'を撮っても', hint: 'to+te+mo+ii' }
+                    ]
+                },
+                {
+                    id: 'restaurant-ticket',
+                    title: '餐廳整理券',
+                    image: 'https://placehold.co/600x400/FF5733/ffffff?text=Ticket+Counter',
+                    dialogue: [
+                        { speaker: '遊客', text: 'すみません、このレストランは整理券が必要ですか？' },
+                        { speaker: '工作人員', text: 'はい、こちらで配布しています。' },
+                        { speaker: '遊客', text: '何時の分が取れますか？' },
+                        { speaker: '工作人員', text: '今ですと、13時の回になります。' },
+                        { speaker: '遊客', text: 'では、それをお願いします。' },
+                        { speaker: '工作人員', text: 'はい、こちらです。時間になりましたら、この入口までお越しください。' },
+                        { speaker: '遊客', text: '分かりました。' }
+                    ],
+                    checkInDialogue: [
+                        { speaker: '遊客', text: 'すみません、この整理券を使いたいのですが。' },
+                        { speaker: '工作人員', text: 'はい、どうぞ。時間が来ましたら、この入り口でスタッフにお見せください。QRコードを読み込みます。' },
+                        { speaker: '遊客', text: '分かりました。' }
+                    ],
+                    quizzes: [
+                        { question: 'このレストランは___が必要ですか？ (號碼牌)', answer: '整理券', hint: '整+理+券' },
+                        { question: '整理券はここで___？ (發放嗎)', answer: '配布していますか', hint: '配+布+していますか' },
+                        { question: '___になりましたら、この入口までお越しください。 (時間)', answer: '時間', hint: '時+間' }
+                    ]
+                },
+                {
+                    id: 'restroom',
+                    title: '尋找洗手間',
+                    image: 'https://placehold.co/600x400/ADD8E6/ffffff?text=Restroom',
+                    dialogue: [
+                        { speaker: '遊客', text: 'すみません、お手洗いはどこですか？', otherPhrases: ['トイレはどこですか？'] },
+                        { speaker: '工作人員', text: 'お手洗いはこの道をまっすぐです。' },
+                        { speaker: '遊客', text: 'ありがとうございます。' },
+                        { speaker: '工作人員', text: 'どういたしまして。' }
+                    ],
+                    quizzes: [
+                        { question: 'お手洗いは___ですか？ (在哪裡)', answer: 'どこ', hint: 'ど+こ' },
+                        { question: '___はどこですか？ (自動販賣機)', answer: '自動販売機', hint: '自+動+販+売+機' },
+                        { question: '___にベンチはありますか？ (附近)', answer: 'この近く', hint: 'この+近く' }
+                    ]
+                }
+            ]
+        };
+
+        // UI state management (使用者介面狀態管理)
+        let currentMode = 'home'; // home, dialogue, quiz
+        let currentScenario = null;
+        let dialogueIndex = 0;
+        let quizIndex = 0;
+        let quizQuestion = null;
+        let showCheckInButton = false;
+
+        const mainContent = document.getElementById('main-content');
+        const header = document.querySelector('header');
+
+        /**
+         * 渲染主畫面，顯示所有情境卡片
+         */
+        function renderHomeScreen() {
+            mainContent.innerHTML = ''; // 清除舊內容
+            header.style.display = 'block';
+
+            const container = document.createElement('div');
+            container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+
+            appData.scenarios.forEach(scenario => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-50 rounded-xl shadow-md overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-300';
+                card.onclick = () => showScenarioOptions(scenario);
+
+                card.innerHTML = `
+                    <img src="${scenario.image}" alt="${scenario.title}" class="w-full h-40 object-cover">
+                    <div class="p-4 text-center">
+                        <h3 class="text-xl font-semibold text-gray-800">${scenario.title}</h3>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            mainContent.appendChild(container);
+        }
+
+        /**
+         * 顯示特定情境的模式選擇按鈕
+         * @param {object} scenario - 所選的情境物件
+         */
+        function showScenarioOptions(scenario) {
+            currentScenario = scenario;
+            mainContent.innerHTML = `
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">${scenario.title}</h2>
+                    <img src="${scenario.image}" alt="${scenario.title}" class="w-full rounded-xl my-4 shadow-lg">
+                </div>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
+                    <button id="dialogue-mode-btn" class="bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-600 transition-colors">
+                        對話模式
+                    </button>
+                    <button id="quiz-mode-btn" class="bg-purple-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-purple-600 transition-colors">
+                        測驗模式
+                    </button>
+                </div>
+                <button id="back-btn" class="mt-8 text-gray-500 hover:text-gray-700 transition-colors flex items-center mx-auto">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    返回
+                </button>
+            `;
+
+            document.getElementById('dialogue-mode-btn').onclick = () => startDialogueMode();
+            document.getElementById('quiz-mode-btn').onclick = () => startQuizMode();
+            document.getElementById('back-btn').onclick = () => renderHomeScreen();
+        }
+
+        /**
+         * 啟動對話模式
+         */
+        function startDialogueMode() {
+            currentMode = 'dialogue';
+            showCheckInButton = false;
+            renderDialogueScreen(currentScenario.dialogue);
+        }
+
+        /**
+         * 啟動報到對話模式
+         */
+        function startCheckInDialogue() {
+            renderDialogueScreen(currentScenario.checkInDialogue);
+        }
+
+
+        /**
+         * 渲染對話畫面並顯示所有對話內容
+         * @param {array} dialogueList - 要顯示的對話陣列
+         */
+        function renderDialogueScreen(dialogueList) {
+            if (!currentScenario || dialogueList.length === 0) {
+                // 如果情境沒有對話內容
+                mainContent.innerHTML = `
+                    <div class="text-center">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-800">此情境沒有對話內容！</h2>
+                        <button id="back-to-home-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                            返回首頁
+                        </button>
+                    </div>
+                `;
+                document.getElementById('back-to-home-btn').onclick = () => {
+                    currentMode = 'home';
+                    renderHomeScreen();
+                };
+                return;
+            }
+
+            // 動態生成所有對話內容
+            let dialogueHtml = '';
+            dialogueList.forEach((line, index) => {
+                const otherPhrasesHtml = line.otherPhrases ? `
+                    <div id="other-phrases-${index}" class="mt-2 p-3 bg-gray-100 rounded-lg shadow-inner hidden">
+                        <h4 class="font-semibold text-gray-700">其他說法:</h4>
+                        <ul class="list-disc list-inside mt-1 text-gray-600">
+                            ${line.otherPhrases.map(phrase => `<li>${phrase}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button id="toggle-phrases-btn-${index}" class="mt-2 text-sm text-indigo-500 font-medium hover:underline">
+                        顯示其他說法
+                    </button>
+                ` : '';
+                
+                dialogueHtml += `
+                    <div class="flex ${line.speaker === '遊客' ? 'justify-end' : 'justify-start'}">
+                        <div>
+                            <div class="max-w-md p-4 rounded-3xl shadow-lg border ${line.speaker === '遊客' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <span class="font-semibold">${line.speaker}:</span> ${line.text}
+                            </div>
+                            ${otherPhrasesHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            mainContent.innerHTML = `
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">${currentScenario.title}</h2>
+                </div>
+                <div class="space-y-6">
+                    ${dialogueHtml}
+                </div>
+                ${(currentScenario.id === 'restaurant-ticket' && dialogueList === currentScenario.dialogue) ? `
+                    <button id="check-in-btn" class="mt-8 bg-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors flex items-center mx-auto">
+                        使用整理券（報到）
+                    </button>
+                ` : ''}
+                <button id="back-btn" class="mt-8 text-gray-500 hover:text-gray-700 transition-colors flex items-center mx-auto">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    返回
+                </button>
+            `;
+            
+            // 為所有「其他說法」按鈕添加點擊事件
+            dialogueList.forEach((line, index) => {
+                if (line.otherPhrases) {
+                    const phrasesBtn = document.getElementById(`toggle-phrases-btn-${index}`);
+                    phrasesBtn.onclick = () => {
+                        const phrasesDiv = document.getElementById(`other-phrases-${index}`);
+                        phrasesDiv.classList.toggle('hidden');
+                        phrasesBtn.textContent = phrasesDiv.classList.contains('hidden') ? '顯示其他說法' : '隱藏其他說法';
+                    };
+                }
+            });
+
+            if (currentScenario.id === 'restaurant-ticket' && dialogueList === currentScenario.dialogue) {
+                document.getElementById('check-in-btn').onclick = startCheckInDialogue;
+            }
+
+            document.getElementById('back-btn').onclick = () => showScenarioOptions(currentScenario);
+        }
+
+        /**
+         * 啟動測驗模式
+         */
+        function startQuizMode() {
+            currentMode = 'quiz';
+            if (!currentScenario || !currentScenario.quizzes || currentScenario.quizzes.length === 0) {
+                mainContent.innerHTML = `
+                    <div class="text-center">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-800">此情境沒有測驗！</h2>
+                        <button id="back-to-options-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                            返回
+                        </button>
+                    </div>
+                `;
+                document.getElementById('back-to-options-btn').onclick = () => showScenarioOptions(currentScenario);
+                return;
+            }
+
+            // 隨機選取一個測驗題目
+            quizIndex = Math.floor(Math.random() * currentScenario.quizzes.length);
+            quizQuestion = currentScenario.quizzes[quizIndex];
+            renderQuizScreen();
+        }
+
+        /**
+         * 渲染測驗畫面
+         */
+        function renderQuizScreen() {
+            mainContent.innerHTML = `
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">${currentScenario.title}</h2>
+                    <p class="text-lg text-gray-700 mb-4">${quizQuestion.question.replace('___', '<span class="text-red-500 underline">?</span>')}</p>
+                    <input id="quiz-input" type="text" class="w-full md:w-2/3 p-3 text-lg border border-gray-300 rounded-lg text-center" placeholder="請在此輸入日文答案">
+                    <div id="quiz-message" class="mt-4 text-lg font-semibold hidden"></div>
+                    <div id="quiz-hint" class="mt-4 text-gray-500 hidden">${quizQuestion.hint}</div>
+                    
+                    <div class="mt-8 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
+                        <button id="check-answer-btn" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">
+                            檢查答案
+                        </button>
+                        <button id="hint-btn" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors">
+                            提示
+                        </button>
+                        <button id="new-question-btn" class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors hidden">
+                            新題目
+                        </button>
+                    </div>
+                </div>
+                <button id="back-btn" class="mt-8 text-gray-500 hover:text-gray-700 transition-colors flex items-center mx-auto">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    返回
+                </button>
+            `;
+
+            const inputElement = document.getElementById('quiz-input');
+            const messageElement = document.getElementById('quiz-message');
+            const hintElement = document.getElementById('quiz-hint');
+            const checkBtn = document.getElementById('check-answer-btn');
+            const hintBtn = document.getElementById('hint-btn');
+            const newQuestionBtn = document.getElementById('new-question-btn');
+            
+            checkBtn.onclick = () => {
+                const userGuess = inputElement.value.trim();
+                const isCorrect = userGuess.toLowerCase() === quizQuestion.answer.toLowerCase();
+                
+                messageElement.textContent = isCorrect ? '✅ 答對了！' : '❌ 答錯了，請再試一次。';
+                messageElement.classList.remove('hidden');
+                messageElement.classList.add(isCorrect ? 'text-green-600' : 'text-red-600');
+
+                if (isCorrect) {
+                    checkBtn.classList.add('hidden');
+                    hintBtn.classList.add('hidden');
+                    newQuestionBtn.classList.remove('hidden');
+                }
+            };
+            
+            hintBtn.onclick = () => {
+                hintElement.classList.remove('hidden');
+            };
+
+            newQuestionBtn.onclick = () => startQuizMode();
+            document.getElementById('back-btn').onclick = () => showScenarioOptions(currentScenario);
+        }
+
+        // 頁面載入時初始渲染
+        document.addEventListener('DOMContentLoaded', renderHomeScreen);
+    </script>
+</body>
+</html>
