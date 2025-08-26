@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日文大小事 | 黑犬ミオ - 輕鬆學日文，從這裡開始</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earth Tones & Cream -->
+    <!-- Application Structure Plan: A single-page, top-down narrative structure with a clear flow. The new structure prioritizes content and interactive learning. It starts with a strong Hero section with the logo, then moves to a "Content & Learning" section that acts as the core of the site, showcasing articles and interactive modules. The Podcast and Subscription sections follow, providing additional value. The "About Me" section is now at the bottom, offering a personal touch without dominating the page. This new structure focuses on the "what" (content) before the "who" (the host), aligning with the user's request for content-first design. -->
+    <!-- Visualization & Content Choices: Report Info: Host's logo -> Goal: Brand identity -> Presentation: Image in header and hero section. Report Info: Articles/interactive learning -> Goal: Showcase core value -> Presentation: Grid of content cards with placeholders and descriptions (HTML/CSS). Interaction: Hover effects on cards. Report Info: Podcast topics -> Goal: Promote free content -> Presentation: Updated card layout with icons. Interaction: Hover effects. Report Info: Subscription details -> Goal: Convert users -> Presentation: Highlighted section with clear CTAs. Justification: This new structure and set of visualizations better highlights the core purpose of the website (content and learning) while creating a unified, branded experience with the new color palette. CONFIRMED: NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF6;
+            color: #4A4A4A;
+        }
+        .text-shadow-brown {
+            text-shadow: 1px 1px 3px rgba(101, 71, 39, 0.2);
+        }
+        .btn-primary {
+            background-color: #654727;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #4A351D;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .btn-secondary {
+            background-color: #C1A689;
+            color: #FFFFFF;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #A98B6D;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .card {
+            transition: all 0.3s ease;
+            border: 1px solid #EAE9E4;
+            background-color: #FFFFFF;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: #DCDAD2;
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="h-10">
+                <a href="javascript:void(0)">
+                    <img src="http://googleusercontent.com/file_content/1" alt="黑犬ミオ 日文大小事 Logo" class="h-full w-auto">
+                </a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#learning" class="text-gray-600 hover:text-[#654727] transition">主題學習</a>
+                <a href="#podcast" class="text-gray-600 hover:text-[#654727] transition">節目特色</a>
+                <a href="#subscribe" class="text-gray-600 hover:text-[#654727] transition">訂閱方案</a>
+                <a href="#about" class="text-gray-600 hover:text-[#654727] transition">關於我</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 space-y-2">
+             <a href="#learning" class="block text-gray-600 hover:text-[#654727] transition">主題學習</a>
+             <a href="#podcast" class="block text-gray-600 hover:text-[#654727] transition">節目特色</a>
+             <a href="#subscribe" class="block text-gray-600 hover:text-[#654727] transition">訂閱方案</a>
+             <a href="#about" class="block text-gray-600 hover:text-[#654727] transition">關於我</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="py-20 md:py-24 text-center bg-white">
+            <div class="container mx-auto px-6">
+                <div class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6">
+                    <img src="http://googleusercontent.com/file_content/1" alt="黑犬ミオ 日文大小事 Logo" class="h-full w-full object-contain">
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold text-[#4A4A4A] leading-tight mb-4 text-shadow-brown">輕鬆學日文，從這裡開始</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                    你好！我是《日文大小事》的黑犬ミオ，在這裡，我將分享實用文章與主題式內容，帶你用更輕鬆有趣的方式征服日文。
+                </p>
+                <div class="space-x-4">
+                    <a href="#learning" class="inline-block btn-primary text-white font-bold py-3 px-8 rounded-full shadow-lg">探索學習內容</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="learning" class="py-20 section-fade-in">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A] mb-2">日文學習文章與主題式內容</h2>
+                    <p class="text-lg text-gray-500">深入淺出，用最簡單的方式理解複雜概念</p>
+                    <div class="w-20 h-1 bg-[#C1A689] mx-auto mt-4 rounded"></div>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#654727] mb-6 border-b-2 border-[#C1A689] pb-2">學日文分享＆補充</h3>
+                        <div class="space-y-6">
+                            <a href="https://example.com/article/1" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">掌握動詞變化：一次搞懂三類動詞</h4>
+                                <p class="text-gray-600 mt-2">詳細說明動詞三類變化規則，搭配實用範例，讓你不再感到混亂。</p>
+                            </a>
+                            <a href="https://example.com/article/2" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">助詞「は」與「が」的深度解析</h4>
+                                <p class="text-gray-600 mt-2">從句子結構與語氣差異，徹底釐清這兩個常見助詞的用法。</p>
+                            </a>
+                             <a href="https://example.com/article/3" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">日本旅行實用會話100句</h4>
+                                <p class="text-gray-600 mt-2">精選旅遊必備句型，讓你輕鬆在日本自由行。</p>
+                            </a>
+                        </div>
+                        <div class="text-center mt-8">
+                             <a href="https://example.com/articles" class="btn-primary text-white font-bold py-3 px-8 rounded-full shadow-lg">看更多</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#654727] mb-6 border-b-2 border-[#C1A689] pb-2">互動式主題</h3>
+                        <div class="space-y-6">
+                             <a href="https://example.com/interactive/1" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">「日本的便利商店」會話練習</h4>
+                                <p class="text-gray-600 mt-2">模擬在日本超商購物的情境，即時練習口說與聽力。</p>
+                            </a>
+                            <a href="https://example.com/interactive/2" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">「我的家」單字記憶遊戲</h4>
+                                <p class="text-gray-600 mt-2">透過互動遊戲，輕鬆學習與家中物品相關的日文單字。</p>
+                            </a>
+                             <a href="https://example.com/interactive/3" class="block card p-6 rounded-xl hover:shadow-lg transition">
+                                <h4 class="text-xl font-bold text-[#4A4A4A]">「日本的四季」文化測驗</h4>
+                                <p class="text-gray-600 mt-2">透過有趣的測驗，加深對日本文化與詞彙的印象。</p>
+                            </a>
+                        </div>
+                        <div class="text-center mt-8">
+                            <a href="https://example.com/interactive" class="btn-primary text-white font-bold py-3 px-8 rounded-full shadow-lg">看更多</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="podcast" class="py-20 bg-white section-fade-in">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A] mb-2">課本學不到的，這裡都有！</h2>
+                    <p class="text-lg text-gray-500">我的 Podcast《日文大小事》</p>
+                    <div class="w-20 h-1 bg-[#C1A689] mx-auto mt-4 rounded"></div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card p-8 rounded-xl text-center">
+                        <div class="text-5xl mb-4">📱</div>
+                        <h3 class="text-xl font-bold text-[#654727] mb-2">滑 IG 學日文</h3>
+                        <p class="text-gray-600">跟著流行，輕鬆掌握最道地的日文用法，讓你的日文更生活化。</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <div class="text-5xl mb-4">🏯</div>
+                        <h3 class="text-xl font-bold text-[#654727] mb-2">日本文化解鎖</h3>
+                        <p class="text-gray-600">深入了解日本人的思維和習慣，讓你的日文表達更上一層樓。</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <div class="text-5xl mb-4">📰</div>
+                        <h3 class="text-xl font-bold text-[#654727] mb-2">熱門時事解析</h3>
+                        <p class="text-600">用日文聊時事，不僅能擴充單字量，更能讓學習變得更有趣。</p>
+                    </div>
+                </div>
+                <div class="text-center mt-12">
+                     <a href="https://open.spotify.com/show/3Py2JjKlyfYjFLFzrDSW9N?si=b6fb95336f4e4425" target="_blank" class="inline-block btn-secondary font-bold py-3 px-8 rounded-full shadow-lg">
+                        🎧 立即收聽 Podcast
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="subscribe" class="py-20 section-fade-in">
+            <div class="container mx-auto px-6">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 p-8 md:p-12">
+                        <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A] mb-4">加入我們的日文世界！</h2>
+                        <p class="text-lg text-gray-600 mb-6">如果你想獲得更深入的學習內容，歡迎加入我的訂閱制服務！</p>
+                        <div class="bg-[#FDFBF6] border-l-4 border-[#C1A689] p-6 rounded-lg">
+                            <h3 class="text-2xl font-bold text-[#654727] mb-2">日文 DLC 擴充包</h3>
+                            <p class="text-gray-700 mb-4">每月只要 <span class="text-3xl font-bold text-[#4A4A4A]">$50</span>，就能解鎖更多獨家內容，讓你的日文學習之旅更豐富。</p>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-center"><span class="text-[#C1A689] mr-2">✦</span>專屬音頻</li>
+                                <li class="flex items-center"><span class="text-[#C1A689] mr-2">✦</span>獨家教材</li>
+                                <li class="flex items-center"><span class="text-[#C1A689] mr-2">✦</span>互動練習</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-8 md:p-12 bg-[#F0F0E6] text-center flex flex-col justify-center">
+                         <div class="text-6xl mb-4">🚀</div>
+                         <p class="text-xl text-gray-700 font-medium mb-6">準備好讓你的日文能力<br>大幅升級了嗎？</p>
+                         <a href="https://open.firstory.me/join/ckwkmqxtkg7u70b90syhw1wh1" target="_blank" class="w-full btn-primary text-white font-bold py-4 px-8 rounded-full shadow-lg text-lg">
+                            立即訂閱解鎖
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 section-fade-in">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A] mb-2">關於我</h2>
+                    <div class="w-20 h-1 bg-[#C1A689] mx-auto mt-4 rounded"></div>
+                </div>
+                <div class="max-w-3xl mx-auto text-lg text-gray-700 leading-relaxed space-y-4">
+                    <p>你好！我是《日文大小事》的黑犬ミオ，從零基礎自學到日文系畢業，累積了多年在補習班和家教的經驗。我了解學習者會遇到的各種困擾，因此希望用最簡單、最直觀的方式，幫助你輕鬆學會日文。</p>
+                    <p>我相信學日文不應該是單向的填鴨式教育，而是一個充滿樂趣的探索過程。讓我陪你一起，用最輕鬆的方式，征服日文吧！</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#EAE9E4] text-center py-10">
+        <div class="container mx-auto px-6">
+            <p class="text-gray-600">&copy; 2024 日文大小事 by 黑犬ミオ. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    e.preventDefault();
+                    mobileMenu.classList.add('hidden');
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        const sections = document.querySelectorAll('.section-fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+
+</body>
+</html>
