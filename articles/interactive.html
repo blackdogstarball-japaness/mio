@@ -1,34 +1,163 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
+    <!-- 設定網頁編碼與響應式設計 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動式主題 - 文章列表</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>學日文分享＆補充 | 文章總覽</title>
+    <!-- 引入 Varela Round 字體，提供圓潤可愛的風格 -->
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        /* 基本樣式設定 */
+        body {
+            font-family: 'Varela Round', sans-serif;
+            margin: 0;
+            background-color: #fcfbf8; /* 柔和的米白色背景 */
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+
+        /* 網頁容器，限制內容寬度並置中 */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        /* 頁首樣式 */
+        .header {
+            text-align: center;
+            padding-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #5c4f42; /* 深咖啡色標題 */
+            letter-spacing: 2px;
+            margin: 0;
+            font-weight: 400; /* Varela Round 字體只有一種粗細 */
+        }
+        
+        /* 返回連結樣式 */
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #5c4f42; /* 深咖啡色連結 */
+            font-size: 1em;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #a39b8f;
+        }
+
+        /* 文章卡片樣式 */
+        .article-card {
+            background-color: #f4f0e9; /* 淺咖啡色卡片背景 */
+            border-radius: 12px;
+            border: 1px solid #e0d7c3; /* 添加柔和的邊框 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05); /* 柔和的陰影效果 */
+            margin-bottom: 30px;
+            padding: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 滑鼠懸停效果 */
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 分類標籤樣式 */
+        .category-tag {
+            background-color: #d9c9b5; /* 較深的咖啡色標籤背景 */
+            color: #5c4f42;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 400;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* 文章標題樣式 */
+        .article-card h2 {
+            font-size: 1.8em;
+            color: #5c4f42;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        /* 文章摘要樣式 */
+        .article-card p {
+            font-size: 1em;
+            color: #7a7369;
+            margin-bottom: 25px;
+        }
+
+        /* 繼續閱讀連結樣式 */
+        .read-more-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #5c4f42; /* 深咖啡色的連結顏色 */
+            font-weight: 700;
+            border: 1px solid #5c4f42;
+            padding: 8px 18px;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .read-more-link:hover {
+            background-color: #5c4f42;
+            color: #fff;
+        }
+
+        /* 頁腳樣式 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 0.85em;
+            color: #a39b8f;
+        }
+    </style>
 </head>
 <body>
+    
+    <!-- 返回首頁連結，位於頁面最頂端 -->
+    <a href="../index.html" class="back-link container">返回首頁</a>
+
+    <!-- 頁首區塊 -->
     <header class="header">
-        <a href="../index.html" class="back-link">返回首頁</a>
         <h1>互動式主題</h1>
     </header>
 
-    <main class="container">
-        <div class="article-list">
-            <h2>主題遊樂元對話</h2>
-            <p>模擬在遊樂園的對話價。</p>
-            <a href="interactive-learning.html" class="read-more">開始練習 &gt;&gt;</a>
-            
-            <hr>
-            
-            <h2>餐廳點餐情境</h2>
-            <p>學習如何在日本餐廳點餐，包含詢問推薦菜色和結帳。</p>
-            <a href="./interactive/scenario2.html" class="read-more">開始練習 &gt;&gt;</a>
-            
-        </div>
-    </main>
+    <!-- 網頁內容主要容器 -->
+    <div class="container">
 
-    <footer>
-        <p>&copy; 2024 主題日文學習</p>
+        <!-- 文章卡片一：主題遊樂園對話 -->
+        <div class="article-card">
+            <div class="category-tag">主題遊樂園對話</div>
+            <h2>模擬在遊樂園的對話練習</h2>
+            <p>模擬在遊樂園的對話，讓您輕鬆應對真實情境。</p>
+            <a href="https://blackdogstarball-japaness.github.io/mio/interactive-learning.html" class="read-more-link">開始練習 ></a>
+        </div>
+
+        <!-- 文章卡片二：餐廳點餐情境 -->
+        <div class="article-card">
+            <div class="category-tag">餐廳點餐情境</div>
+            <h2>學習如何在日本餐廳點餐</h2>
+            <p>學習如何在日本餐廳點餐，包含詢問推薦菜色和結帳。</p>
+            <a href="#" class="read-more-link">開始練習 ></a>
+        </div>
+        
+    </div>
+
+    <!-- 頁腳區塊 -->
+    <footer class="footer">
+        © 2024 主題日文學習
     </footer>
+
 </body>
 </html>
