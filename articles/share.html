@@ -1,31 +1,154 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
+    <!-- 設定網頁編碼與響應式設計 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日文分享與補充 - 文章列表</title>
-    <link rel="stylesheet" href="../style.css"> </head>
+    <title>學日文分享＆補充 | 文章總覽</title>
+    <!-- 引入 Varela Round 字體，提供圓潤可愛的風格 -->
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        /* 基本樣式設定 */
+        body {
+            font-family: 'Varela Round', sans-serif;
+            margin: 0;
+            background-color: #fcfbf8; /* 柔和的米白色背景 */
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+
+        /* 網頁容器，限制內容寬度並置中 */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        /* 頁首樣式 */
+        .header {
+            text-align: center;
+            padding-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #5c4f42; /* 深咖啡色標題 */
+            letter-spacing: 2px;
+            margin: 0;
+            font-weight: 400; /* Varela Round 字體只有一種粗細 */
+        }
+
+        /* 文章卡片樣式 */
+        .article-card {
+            background-color: #f4f0e9; /* 淺咖啡色卡片背景 */
+            border-radius: 12px;
+            border: 1px solid #e0d7c3; /* 添加柔和的邊框 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05); /* 柔和的陰影效果 */
+            margin-bottom: 30px;
+            padding: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 滑鼠懸停效果 */
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 分類標籤樣式 */
+        .category-tag {
+            background-color: #d9c9b5; /* 較深的咖啡色標籤背景 */
+            color: #5c4f42;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 400;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* 文章標題樣式 */
+        .article-card h2 {
+            font-size: 1.8em;
+            color: #5c4f42;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        /* 文章摘要樣式 */
+        .article-card p {
+            font-size: 1em;
+            color: #7a7369;
+            margin-bottom: 25px;
+        }
+
+        /* 繼續閱讀連結樣式 */
+        .read-more-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #5c4f42; /* 深咖啡色的連結顏色 */
+            font-weight: 700;
+            border: 1px solid #5c4f42;
+            padding: 8px 18px;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .read-more-link:hover {
+            background-color: #5c4f42;
+            color: #fff;
+        }
+
+        /* 頁腳樣式 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 0.85em;
+            color: #a39b8f;
+        }
+    </style>
+</head>
 <body>
+
+    <!-- 頁首區塊 -->
     <header class="header">
-        <a href="../index.html" class="back-link">返回首頁</a>
         <h1>學日文分享＆補充</h1>
     </header>
 
-    <main class="container">
-        <div class="article-list">
-            <h2>日本旅遊常用句型</h2>
-            <p>這篇文章教你如何在日本輕鬆應對各種情境。</p>
-            <a href="./share/article1.html" class="read-more">繼續閱讀 &gt;&gt;</a>
-            
-            <hr> <h2>日文N2文法重點</h2>
-            <p>本文整理了幾個N2文法大魔王，讓你輕鬆掌握。</p>
-            <a href="./share/article2.html" class="read-more">繼續閱讀 &gt;&gt;</a>
-            
-        </div>
-    </main>
+    <!-- 網頁內容主要容器 -->
+    <div class="container">
 
-    <footer>
-        <p>&copy; 2024 主題日文學習</p>
+        <!-- 文章卡片一：學日文分享 -->
+        <div class="article-card">
+            <div class="category-tag">學日文分享＆補充</div>
+            <h2>N2 文法大魔王輕鬆掌握</h2>
+            <p>本文整理了幾個 N2 文法大魔王，讓你輕鬆掌握，不再被複雜的句型困擾。</p>
+            <a href="#" class="read-more-link">繼續閱讀 ></a>
+        </div>
+
+        <!-- 文章卡片二：日本旅遊 -->
+        <div class="article-card">
+            <div class="category-tag">日本旅遊常用句型</div>
+            <h2>如何在日本輕鬆應對各種情境</h2>
+            <p>這篇文章教你如何在日本輕鬆應對各種情境，從點餐到問路，讓您旅途更順暢。</p>
+            <a href="#" class="read-more-link">繼續閱讀 ></a>
+        </div>
+
+        <!-- 文章卡片三：新增範例 -->
+        <div class="article-card">
+            <div class="category-tag">日文學習心得</div>
+            <h2>學習日文的五個實用小技巧</h2>
+            <p>分享我個人在學習日文過程中的五個實用技巧，幫助你更有效地提升日語能力。</p>
+            <a href="#" class="read-more-link">繼續閱讀 ></a>
+        </div>
+
+    </div>
+
+    <!-- 頁腳區塊 -->
+    <footer class="footer">
+        © 2024 主題日文學習
     </footer>
+
 </body>
 </html>
