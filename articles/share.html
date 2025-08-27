@@ -37,6 +37,20 @@
             margin: 0;
             font-weight: 400; /* Varela Round 字體只有一種粗細 */
         }
+        
+        /* 返回連結樣式 */
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #5c4f42; /* 深咖啡色連結 */
+            font-size: 1em;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #a39b8f;
+        }
 
         /* 文章卡片樣式 */
         .article-card {
@@ -114,6 +128,8 @@
     <!-- 頁首區塊 -->
     <header class="header">
         <h1>學日文分享＆補充</h1>
+        <!-- 返回首頁連結 -->
+        <a href="../index.html" class="back-link">返回首頁</a>
     </header>
 
     <!-- 網頁內容主要容器 -->
