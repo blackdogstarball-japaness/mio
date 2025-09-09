@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日文動詞變化測驗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: #fef3c7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .question-card, .results-card {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #fffbe6;
+            border-radius: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .option-button {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 1rem;
+            background-color: #fef08a;
+            color: #4b5563;
+            font-weight: bold;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 2px solid #fde047;
+        }
+        .option-button:hover:not(.correct):not(.incorrect) {
+            transform: scale(1.02);
+            background-color: #fcd34d;
+        }
+        .option-button.correct {
+            background-color: #bbf7d0;
+            border-color: #4ade80;
+            color: #166534;
+            pointer-events: none;
+        }
+        .option-button.incorrect {
+            background-color: #fecaca;
+            border-color: #f87171;
+            color: #991b1b;
+            pointer-events: none;
+        }
+        .restart-button, .start-button {
+            background-color: #f9a8d4;
+            color: #831843;
+            font-weight: bold;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #ec4899;
+        }
+        .restart-button:hover, .start-button:hover {
+            transform: scale(1.05);
+            background-color: #f472b6;
+        }
+        .result-item {
+            text-align: left;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 1rem;
+        }
+        .result-item.correct {
+            background-color: #d1fae5;
+            border: 2px solid #4ade80;
+        }
+        .result-item.incorrect {
+            background-color: #ffe4e6;
+            border: 2px solid #f87171;
+        }
+        .result-label {
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-yellow-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container">
+        <h1 class="text-3xl font-bold text-pink-500 mb-2">日文動詞變化測驗</h1>
+        <p class="text-gray-600 mb-6">來練習動詞變化吧！每次測驗有隨機的五道題目。</p>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <button id="start-button" class="start-button">開始測驗</button>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz-container" class="hidden">
+            <div class="flex justify-between items-center mb-4 text-gray-700 font-bold">
+                <span id="score-display">得分：0</span>
+                <span id="question-count">題目：0/5</span>
+            </div>
+            <div class="question-card">
+                <p id="question-text" class="text-xl font-bold text-gray-800 mb-4"></p>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Options will be injected here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-container" class="hidden">
+            <div class="results-card">
+                <h2 class="text-2xl font-bold text-pink-500 mb-4">測驗結果</h2>
+                <p id="final-score" class="text-xl text-gray-800 mb-2">你的總得分：0/5</p>
+                <p id="accuracy-rate" class="text-xl text-gray-800 mb-4">答對率：0%</p>
+                <div id="results-list" class="mt-6">
+                    <!-- Results summary will be injected here by JS -->
+                </div>
+                <button id="restart-button" class="restart-button">重新開始</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 測驗問題資料庫
+        const verbData = [
+            // 五段動詞 (Group 1)
+            { verb: '書く', group: 1, forms: { masu: '書きます', negative: '書かない', negativeMasu: '書きません', dictionary: '書く', te: '書いて' } },
+            { verb: '読む', group: 1, forms: { masu: '読みます', negative: '読まない', negativeMasu: '読みません', dictionary: '読む', te: '読んで' } },
+            { verb: '話す', group: 1, forms: { masu: '話します', negative: '話さない', negativeMasu: '話しません', dictionary: '話す', te: '話して' } },
+            { verb: '立つ', group: 1, forms: { masu: '立ちます', negative: '立たない', negativeMasu: '立ちません', dictionary: '立つ', te: '立って' } },
+            { verb: '買う', group: 1, forms: { masu: '買います', negative: '買わない', negativeMasu: '買いません', dictionary: '買う', te: '買って' } },
+            // 一段動詞 (Group 2)
+            { verb: '食べる', group: 2, forms: { masu: '食べます', negative: '食べない', negativeMasu: '食べません', dictionary: '食べる', te: '食べて' } },
+            { verb: '見る', group: 2, forms: { masu: '見ます', negative: '見ない', negativeMasu: '見ません', dictionary: '見る', te: '見て' } },
+            { verb: '起きる', group: 2, forms: { masu: '起きます', negative: '起きない', negativeMasu: '起きません', dictionary: '起きる', te: '起きて' } },
+            { verb: '寝る', group: 2, forms: { masu: '寝ます', negative: '寝ない', negativeMasu: '寝ません', dictionary: '寝る', te: '寝て' } },
+            { verb: '教える', group: 2, forms: { masu: '教えます', negative: '教えない', negativeMasu: '教えません', dictionary: '教える', te: '教えて' } },
+            // 變格動詞 (Group 3)
+            { verb: '来る', group: 3, forms: { masu: '来ます', negative: '来ない', negativeMasu: '来ません', dictionary: '来る', te: '来て' } },
+            { verb: 'する', group: 3, forms: { masu: 'します', negative: 'しない', negativeMasu: 'しません', dictionary: 'する', te: 'して' } },
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizHistory = [];
+
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const questionCountDisplay = document.getElementById('question-count');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const accuracyRateDisplay = document.getElementById('accuracy-rate');
+        const resultsList = document.getElementById('results-list');
+        const restartButton = document.getElementById('restart-button');
+
+        // 產生陷阱選項
+        function getTrapOptions(verb, formType, originalForm) {
+            let traps = new Set();
+            const forms = verb.forms;
+            const verbStem = verb.verb.slice(0, -1);
+            const lastChar = verb.verb.slice(-1);
+
+            // 針對て形生成更具迷惑性的特定陷阱
+            if (formType === 'dictToTe') {
+                // 總是加入動詞原形 + て的陷阱
+                traps.add(verb.verb + 'て');
+
+                // 根據動詞的詞尾，生成不同類型的て形變化陷阱
+                if (verb.group === 1) {
+                    const trapsByEnding = {
+                        'く': [verbStem + 'って', verbStem + 'んで', verbStem + 'して'],
+                        'ぐ': [verbStem + 'いて', verbStem + 'って', verbStem + 'んで'],
+                        'す': [verbStem + 'いて', verbStem + 'って', verbStem + 'んで'],
+                        'つ': [verbStem + 'いて', verbStem + 'んで', verbStem + 'して'],
+                        'う': [verbStem + 'いて', verbStem + 'んで', verbStem + 'して'],
+                        'る': [verbStem + 'いて', verbStem + 'んで', verbStem + 'して'],
+                        'ぬ': [verbStem + 'いて', verbStem + 'って', verbStem + 'して'],
+                        'ぶ': [verbStem + 'いて', verbStem + 'って', verbStem + 'して'],
+                        'む': [verbStem + 'いて', verbStem + 'って', verbStem + 'して']
+                    };
+                    const potentialTraps = trapsByEnding[lastChar] || [];
+                    potentialTraps.forEach(trap => traps.add(trap));
+                } else if (verb.group === 2) {
+                    traps.add(verbStem + 'って');
+                }
+                // 變格動詞的特定陷阱
+                if (verb.verb === '来る') {
+                    traps.add('来って');
+                    traps.add('来るて');
+                }
+                if (verb.verb === 'する') {
+                    traps.add('すって');
+                    traps.add('するて');
+                }
+            } else {
+                // 其他非て形的動詞變化，使用原有的一般性陷阱
+                // 將所有正確但非答案的動詞形式作為通用陷阱
+                for (const key in forms) {
+                    if (forms[key] !== originalForm) {
+                        traps.add(forms[key]);
+                    }
+                }
+                
+                switch (formType) {
+                    case 'dictToMasu':
+                        traps.add(forms.dictionary + 'ます');
+                        if (verb.group === 2) {
+                            traps.add(`${verb.verb.slice(0, -2)}りす`);
+                            traps.add(`${verb.verb.slice(0, -2)}ります`);
+                        }
+                        if (verb.group === 1) {
+                            traps.add(`${verbStem}います`);
+                        }
+                        break;
+                    case 'masuToDict':
+                        traps.add(forms.masu.slice(0, -2) + 'る');
+                        if (verb.group === 1) {
+                            traps.add(forms.masu.slice(0, -2) + 'う');
+                        }
+                        break;
+                    case 'dictToNegative':
+                        traps.add(forms.negativeMasu);
+                        traps.add(forms.dictionary + 'ません');
+                        if (verb.group === 1) {
+                            traps.add(verb.verb.slice(0, -1) + 'ない');
+                        }
+                        break;
+                    case 'masuToNegative':
+                        traps.add(forms.negative);
+                        traps.add(forms.masu.slice(0, -2) + 'ません');
+                        traps.add(forms.dictionary + 'ません');
+                        break;
+                }
+            }
+            
+            // 移除正確答案
+            traps.delete(originalForm);
+            
+            return Array.from(traps);
+        }
+
+        // 轉換形式名稱
+        function getFormName(form) {
+            switch(form) {
+                case 'dictionary': return '辭書形（原形）';
+                case 'masu': return '禮貌形（ます形）';
+                case 'negative':
+                case 'negativeMasu': return '否定形';
+                case 'te': return 'て形';
+                default: return '';
+            }
+        }
+
+        // 隨機選擇五道題目
+        function getRandomQuestions() {
+            const shuffledVerbs = [...verbData].sort(() => 0.5 - Math.random());
+            const questionPool = [];
+
+            // 確保至少有一題是「動詞原形 → て形」
+            const teFormVerb = shuffledVerbs[0];
+            const teFormOptions = [...new Set([teFormVerb.forms.te, ...getTrapOptions(teFormVerb, 'dictToTe', teFormVerb.forms.te)])].slice(0, 4).sort(() => 0.5 - Math.random());
+            questionPool.push({
+                question: `動詞「${teFormVerb.forms.dictionary}」的${getFormName('te')}是？`,
+                correctAnswer: teFormVerb.forms.te,
+                options: teFormOptions
+            });
+
+            // 其他四題隨機從剩餘的變化類型中選取
+            const otherTypes = ['dictToMasu', 'masuToDict', 'dictToNegative', 'masuToNegative'];
+            for (let i = 1; i < 5; i++) {
+                const verb = shuffledVerbs[i % shuffledVerbs.length];
+                const randomType = otherTypes[Math.floor(Math.random() * otherTypes.length)];
+                
+                let questionPrompt;
+                let correctForm;
+
+                if (randomType === 'dictToMasu') {
+                    questionPrompt = `動詞「${verb.forms.dictionary}」的${getFormName('masu')}是？`;
+                    correctForm = verb.forms.masu;
+                } else if (randomType === 'masuToDict') {
+                    questionPrompt = `動詞「${verb.forms.masu}」的${getFormName('dictionary')}是？`;
+                    correctForm = verb.forms.dictionary;
+                } else if (randomType === 'dictToNegative') {
+                    questionPrompt = `動詞「${verb.forms.dictionary}」的否定形是？`;
+                    correctForm = verb.forms.negative;
+                } else { // masuToNegative
+                    questionPrompt = `動詞「${verb.forms.masu}」的否定形是？`;
+                    correctForm = verb.forms.negativeMasu;
+                }
+
+                let traps = getTrapOptions(verb, randomType, correctForm);
+                let selectedTraps = [];
+                // 隨機選擇3個陷阱選項
+                while (selectedTraps.length < 3 && traps.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * traps.length);
+                    selectedTraps.push(traps.splice(randomIndex, 1)[0]);
+                }
+                
+                const allOptions = [correctForm, ...selectedTraps];
+                
+                const finalOptions = allOptions.sort(() => 0.5 - Math.random());
+
+                questionPool.push({
+                    question: questionPrompt,
+                    correctAnswer: correctForm,
+                    options: finalOptions
+                });
+            }
+            
+            // 最後將所有題目隨機打亂順序
+            return questionPool.sort(() => 0.5 - Math.random());
+        }
+
+        // 顯示當前問題
+        function showQuestion() {
+            if (currentQuestionIndex >= currentQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+            
+            // 更新計分板
+            questionCountDisplay.textContent = `題目：${currentQuestionIndex + 1}/5`;
+            scoreDisplay.textContent = `得分：${score}`;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.onclick = () => handleAnswer(option, currentQuestion.correctAnswer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // 處理答案
+        function handleAnswer(selectedAnswer, correctAnswer) {
+            const isCorrect = (selectedAnswer === correctAnswer);
+            if (isCorrect) {
+                score++;
+            }
+
+            // 記錄本次作答
+            quizHistory.push({
+                question: currentQuestions[currentQuestionIndex].question,
+                selectedAnswer: selectedAnswer,
+                correctAnswer: correctAnswer,
+                isCorrect: isCorrect
+            });
+
+            const options = optionsContainer.querySelectorAll('.option-button');
+            options.forEach(button => {
+                if (button.textContent === correctAnswer) {
+                    button.classList.add('correct');
+                }
+                if (button.textContent === selectedAnswer && !isCorrect) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                showQuestion();
+            }, 1500);
+        }
+
+        // 顯示結果
+        function showResults() {
+            quizContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            finalScoreDisplay.textContent = `你的總得分：${score}/5`;
+            const accuracyRate = (score / currentQuestions.length * 100).toFixed(0);
+            accuracyRateDisplay.textContent = `答對率：${accuracyRate}%`;
+
+            resultsList.innerHTML = '';
+            quizHistory.forEach((item, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('result-item', item.isCorrect ? 'correct' : 'incorrect');
+                
+                const questionP = document.createElement('p');
+                questionP.textContent = `${index + 1}. ${item.question}`;
+                questionP.classList.add('font-bold', 'mb-2');
+                
+                const userP = document.createElement('p');
+                userP.innerHTML = `<span class="result-label">你的答案：</span>${item.selectedAnswer}`;
+                
+                const correctP = document.createElement('p');
+                correctP.innerHTML = `<span class="result-label">正確答案：</span>${item.correctAnswer}`;
+
+                resultItem.appendChild(questionP);
+                resultItem.appendChild(userP);
+                if (!item.isCorrect) {
+                    resultItem.appendChild(correctP);
+                }
+
+                resultsList.appendChild(resultItem);
+            });
+        }
+
+        // 重新開始
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizHistory = [];
+            currentQuestions = getRandomQuestions();
+            startScreen.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            showQuestion();
+        }
+
+        // 事件監聽
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', startQuiz);
+    </script>
+</body>
+</html>
