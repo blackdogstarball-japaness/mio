@@ -173,7 +173,7 @@
         let orderedItems = [];
         let totalAmount = 0;
         let dialogueQueue = [];
-        const DIALOGUE_DELAY = 10000; // 10 秒延遲
+        const DIALOGUE_DELAY = 5000; // 5 秒延遲
 
         // 菜單資料
         const menu = [
@@ -260,13 +260,13 @@
                 };
             } else if (choice === '一人') {
                 dialogueText = 'かしこまりました。カウンター席へどうぞ。';
-                nextAction = showOrderingChoices;
+                nextAction = showMenuAfterSeating;
             } else if (choice === '二人') {
                 dialogueText = 'かしこまりました。こちらのテーブル席へどうぞ。';
-                nextAction = showOrderingChoices;
+                nextAction = showMenuAfterSeating;
             } else if (choice === '三人') {
                 dialogueText = '少々お待ちください。今、お席を準備いたします。';
-                nextAction = showOrderingChoices;
+                nextAction = showMenuAfterSeating;
             }
 
             typeMessage(waiterTextEl, dialogueText).then(() => {
@@ -276,22 +276,20 @@
             });
         }
 
-        // 顯示點餐選擇
-        function showOrderingChoices() {
+        // 顯示菜單
+        function showMenuAfterSeating() {
             updateProgressBar('seating');
             currentStage = 'ordering';
-            userOptionsContainer.innerHTML = `
-                <button onclick="handleChoice('ラーメンをください')" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
-                    <span class="font-semibold">ラーメンをください</span>
-                </button>
-                <button onclick="handleChoice('おすすめは何ですか？')" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
-                    <span class="font-semibold">おすすめは何ですか？</span>
-                </button>
-                <button onclick="handleChoice('もう少し考えます')" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
-                    <span class="font-semibold">もう少し考えます</span>
-                </button>
-            `;
-            userOptionsContainer.classList.remove('hidden');
+            userOptionsContainer.classList.add('hidden');
+            menuContainer.classList.remove('hidden');
+            menuItemsContainer.innerHTML = '';
+            menu.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-gray-200 p-4 rounded-none pixel-btn text-left text-gray-800';
+                btn.innerHTML = `<h3 class="font-bold text-base">${item.jp} <span class="text-xs text-gray-500">(${item.name})</span></h3><p class="text-xs text-gray-500">¥${item.price}</p>`;
+                btn.onclick = () => addOrderItem(item);
+                menuItemsContainer.appendChild(btn);
+            });
             typeMessage(waiterTextEl, 'お決まりになりましたか？');
         }
 
@@ -313,7 +311,7 @@
                             <button onclick="handleChoice('焼き魚定食をください')" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
                                 <span class="font-semibold">焼き魚定食をください</span>
                             </button>
-                            <button onclick="showMenu()" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
+                            <button onclick="showMenuAfterSeating()" class="choice-btn bg-gray-200 text-gray-800 py-3 px-6 rounded-none pixel-btn">
                                 <span class="font-semibold">他のメニューを見る</span>
                             </button>
                         `;
@@ -325,7 +323,7 @@
                 dialogueText = 'はい、ごゆっくりどうぞ。';
                 nextAction = () => {
                      setTimeout(() => {
-                        showMenu();
+                        showMenuAfterSeating();
                         currentStage = 'ordering';
                     }, DIALOGUE_DELAY);
                 };
