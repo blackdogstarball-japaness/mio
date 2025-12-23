@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日語學習大冒險 - 完整五十音與找單字</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+            background: #f8fafc;
+            user-select: none;
+        }
+
+        .kana-card-container {
+            perspective: 1000px;
+            aspect-ratio: 1/1.2;
+        }
+        .kana-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .kana-card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
+        }
+        .card-front { background-color: white; border: 1px solid #e2e8f0; }
+        .card-back {
+            background-color: #6366f1;
+            color: white;
+            transform: rotateY(180deg);
+            padding: 2px;
+        }
+
+        .nav-btn.active {
+            color: #4f46e5;
+            font-weight: bold;
+            border-bottom: 3px solid #4f46e5;
+        }
+
+        .keyboard-btn {
+            transition: all 0.1s;
+        }
+        .keyboard-btn:active {
+            transform: scale(0.9);
+            background-color: #e0e7ff;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .error-shake { animation: shake 0.2s ease-in-out 0s 2; }
+        
+        .empty-slot { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 pb-10">
+
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-600 flex items-center gap-2">
+                <i class="fas fa-language"></i> 完整日語五十音實驗室
+            </h1>
+            <div id="score-container" class="bg-amber-100 px-3 py-1 rounded-full flex items-center gap-2 border border-amber-200">
+                <i class="fas fa-trophy text-amber-500"></i>
+                <span id="score-display" class="font-bold text-amber-700">0</span>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto flex justify-around mt-4">
+            <button onclick="switchView('kana')" class="nav-btn pb-1 active" id="btn-kana">五十音圖</button>
+            <button onclick="switchView('lab')" class="nav-btn pb-1" id="btn-lab">找單字</button>
+            <button onclick="switchView('dialogue')" class="nav-btn pb-1" id="btn-dialogue">常用對話</button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-6">
+        
+        <!-- 1. 完整五十音圖 -->
+        <section id="view-kana" class="view-content">
+            <div class="mb-6 text-center">
+                <h2 class="text-2xl font-bold text-slate-700">清音發音表</h2>
+                <p class="text-sm text-slate-500">點擊聆聽，翻面查看初級單字</p>
+            </div>
+            <div id="kana-grid" class="grid grid-cols-5 gap-2 md:gap-4"></div>
+        </section>
+
+        <!-- 2. 找單字實驗室 -->
+        <section id="view-lab" class="view-content hidden">
+            <div class="bg-white rounded-3xl p-6 shadow-xl mb-6 border-4 border-indigo-50">
+                <div class="text-center mb-6">
+                    <div id="hint-box" class="hidden mb-4 p-3 bg-indigo-50 rounded-2xl border border-indigo-100 animate-bounce">
+                        <span class="text-indigo-600 font-bold">任務：</span>
+                        <span id="hint-text" class="text-lg text-slate-700">拼出「什麼」</span>
+                    </div>
+                    
+                    <div id="lab-input-display" class="text-5xl font-bold text-indigo-600 tracking-widest h-20 flex items-center justify-center gap-2">
+                    </div>
+                    
+                    <div id="found-info" class="min-h-[2.5rem] font-bold text-xl mt-2 italic text-center"></div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <button onclick="submitLab()" class="flex-[2] py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-xl shadow-lg transition-all active:scale-95">
+                            <i class="fas fa-check-circle mr-2"></i>確認送出
+                        </button>
+                        <button onclick="backspaceLab()" class="flex-1 py-4 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-2xl font-bold text-xl transition-all">
+                            <i class="fas fa-backspace"></i>
+                        </button>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="toggleHint()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 transition-colors">
+                            <i class="fas fa-lightbulb mr-2"></i>題目提示
+                        </button>
+                        <button onclick="clearLab()" class="flex-1 py-3 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-red-500 transition-colors">
+                            <i class="fas fa-trash-alt mr-2"></i>全部清除
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lab-keyboard" class="grid grid-cols-5 gap-1.5 md:gap-2 bg-slate-100 p-4 rounded-3xl"></div>
+        </section>
+
+        <!-- 3. 生活對話 -->
+        <section id="view-dialogue" class="view-content hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-700">道地生活對話 (10句精選)</h2>
+            <div id="dialogue-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // 完整的五十音 (清音)
+        const fullKana = [
+            {h:'あ', w:'あひる', cn:'鴨子', icon:'🦆'}, {h:'い', w:'いぬ', cn:'狗', icon:'🐶'}, {h:'う', w:'うえ', cn:'上面', icon:'👆'}, {h:'え', w:'えんぴつ', cn:'鉛筆', icon:'✏️'}, {h:'お', w:'おにぎり', cn:'飯糰', icon:'🍙'},
+            {h:'か', w:'かめ', cn:'烏龜', icon:'🐢'}, {h:'き', w:'き', cn:'木', icon:'🌳'}, {h:'く', w:'くるま', cn:'車', icon:'🚗'}, {h:'け', w:'ケーキ', cn:'蛋糕', icon:'🍰'}, {h:'こ', w:'こま', cn:'陀螺', icon:'🪀'},
+            {h:'さ', w:'さかな', cn:'魚', icon:'🐟'}, {h:'し', w:'しか', cn:'鹿', icon:'🦌'}, {h:'す', w:'すいか', cn:'西瓜', icon:'🍉'}, {h:'せ', w:'せんせい', cn:'老師', icon:'👨‍🏫'}, {h:'そ', w:'そら', cn:'天空', icon:'☁️'},
+            {h:'た', w:'たまご', cn:'蛋', icon:'🥚'}, {h:'ち', w:'ちず', cn: '地圖', icon:'🗺️'}, {h:'つ', w:'つくえ', cn:'書桌', icon:'📖'}, {h:'て', w:'て', cn:'手', icon:'✋'}, {h:'と', w:'とり', cn:'鳥', icon:'🐦'},
+            {h:'な', w:'なす', cn:'茄子', icon:'🍆'}, {h:'に', w:'にんじん', cn:'胡蘿蔔', icon:'🥕'}, {h:'ぬ', w:'ぬりえ', cn:'著色', icon:'🎨'}, {h:'ね', w:'ねこ', cn:'貓', icon:'🐱'}, {h:'の', w:'のり', cn:'海苔', icon:'🍙'},
+            {h:'は', w:'はな', cn:'花', icon:'🌸'}, {h:'ひ', w:'ひかり', cn:'光', icon:'✨'}, {h:'ふ', w:'ふね', cn:'船', icon:'🚢'}, {h:'へ', w:'へび', cn:'蛇', icon:'🐍'}, {h:'ほ', w:'ほし', cn:'星星', icon:'⭐'},
+            {h:'ま', w:'まめ', cn:'豆子', icon:'🫘'}, {h:'み', w:'みかん', cn:'橘子', icon:'🍊'}, {h:'む', w:'むし', cn:'昆蟲', icon:'🐞'}, {h:'め', w:'め', cn:'眼睛', icon:'👁️'}, {h:'も', w:'もち', cn:'麻糬', icon:'🍡'},
+            {h:'や', w:'やま', cn:'山', icon:'⛰️'}, {h:null}, {h:'ゆ', w:'ゆき', cn:'雪', icon:'❄️'}, {h:null}, {h:'よ', w:'よる', cn:'夜晚', icon:'🌙'},
+            {h:'ら', w:'らいおん', cn:'獅子', icon:'🦁'}, {h:'り', w:'りんご', cn:'蘋果', icon:'🍎'}, {h:'る', w:'るす', cn:'不在家', icon:'🏠'}, {h:'れ', w:'れいぞうこ', cn:'冰箱', icon:'🧊'}, {h:'ろ', w:'ろけっと', cn:'火箭', icon:'🚀'},
+            {h:'わ', w:'わに', cn:'鱷魚', icon:'🐊'}, {h:null}, {h:null}, {h:null}, {h:'を', w:'を', cn:'(助詞)', icon:'⚓'},
+            {h:'ん', w:'らいおん', cn:'獅子(尾音)', icon:'🦁'}, {h:null}, {h:null}, {h:null}, {h:null}
+        ];
+
+        // 單字庫
+        const wordDictionary = [
+            ...fullKana.filter(k => k.h && k.w).map(d => ({jp: d.w, cn: d.cn, icon: d.icon})),
+            {jp: 'わたし', cn: '我', icon: '👤'},
+            {jp: 'あなた', cn: '你', icon: '👤'},
+            {jp: 'おとこ', cn: '男人', icon: '👨'},
+            {jp: 'おんな', cn: '女人', icon: '👩'},
+            {jp: 'きし', cn: '騎士', icon: '🏇'},
+            {jp: 'めいし', cn: '名片', icon: '💳'},
+            {jp: 'たな', cn: '架子', icon: '🪜'},
+            {jp: 'みせ', cn: '商店', icon: '🏪'},
+            {jp: 'にhon', cn: '日本', icon: '🗾'},
+            {jp: 'にわ', cn: '院子', icon: '🏡'},
+            {jp: 'うみ', cn: '海', icon: '🌊'},
+            {jp: 'かわ', cn: '河', icon: '🏞️'},
+            {jp: 'すし', cn: '壽司', icon: '🍣'},
+            {jp: 'にく', cn: '肉', icon: '🥩'},
+            {jp: 'みず', cn: '水', icon: '💧'},
+            {jp: 'おかし', cn: '點心', icon: '🍪'},
+            {jp: 'あめ', cn: '糖果 / 雨', icon: '🍬'},
+            {jp: 'しろ', cn: '白色', icon: '⚪'},
+            {jp: 'くろ', cn: '黑色', icon: '⚫'},
+            {jp: 'まる', cn: '圓形', icon: '⭕'},
+            {jp: 'みみ', cn: '耳朵', icon: '👂'},
+            {jp: 'かお', cn: '臉', icon: '😊'},
+            {jp: 'あたま', cn: '頭', icon: '👤'},
+            {jp: 'くち', cn: '嘴巴', icon: '👄'},
+            {jp: 'あし', cn: '腳', icon: '🦶'},
+            {jp: 'いく', cn: '去', icon: '🏃'},
+            {jp: 'みる', cn: '看', icon: '👀'},
+            {jp: 'きく', cn: '聽', icon: '👂'},
+            {jp: 'ねる', cn: '睡覺', icon: '😴'},
+            {jp: 'かう', cn: '買', icon: '🛒'},
+            {jp: 'のむ', cn: '喝', icon: '🥤'},
+            {jp: 'うさぎ', cn: '兔子', icon: '🐰'},
+            {jp: 'いち', cn: '一', icon: '1️⃣'},
+            {jp: 'に', cn: '二', icon: '2️⃣'},
+            {jp: 'さん', cn: '三', icon: '3️⃣'},
+            {jp: 'いま', cn: '現在', icon: '⏰'},
+            {jp: 'なに', cn: '什麼', icon: '❓'},
+            {jp: 'だれ', cn: '誰', icon: '👤'},
+            {jp: 'ゆめ', cn: '夢', icon: '💭'},
+            {jp: 'なまえ', cn: '名字', icon: '📛'},
+            {jp: 'せかい', cn: '世界', icon: '🌍'}
+        ];
+
+        // 常用對話 10 句
+        const dialogues = [
+            {jp: 'こんにちは', cn: '你好 (午安)', romaji: 'Konnichiwa'},
+            {jp: 'ありがとう', cn: '謝謝', romaji: 'Arigatou'},
+            {jp: 'すみません', cn: '對不起 / 請問', romaji: 'Sumimasen'},
+            {jp: 'おはよう', cn: '早安', romaji: 'Ohayou'},
+            {jp: 'おやすみ', cn: '晚安', romaji: 'Oyasumi'},
+            {jp: 'ごめんなさい', cn: '對不起', romaji: 'Gomennasai'},
+            {jp: 'はじめまして', cn: '初次見面', romaji: 'Hajimemashite'},
+            {jp: 'どうぞよろしく', cn: '請多指教', romaji: 'Douzo Yoroshiku'},
+            {jp: 'だいじょうぶ', cn: '沒關係 / 沒問題', romaji: 'Daijoubu'},
+            {jp: 'さようなら', cn: '再見', romaji: 'Sayounara'}
+        ];
+
+        let totalScore = 0;
+        let labInput = "";
+        let isHintActive = false;
+        let currentMission = null;
+
+        window.onload = () => {
+            renderKanaGrid();
+            renderLabKeyboard();
+            renderDialogues();
+        };
+
+        function switchView(view) {
+            document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`btn-${view}`).classList.add('active');
+            if (view === 'lab') clearLab();
+        }
+
+        function renderKanaGrid() {
+            const grid = document.getElementById('kana-grid');
+            grid.innerHTML = '';
+            fullKana.forEach((item) => {
+                const container = document.createElement('div');
+                if (!item.h) {
+                    container.className = 'empty-slot';
+                    grid.appendChild(container);
+                    return;
+                }
+                container.className = 'kana-card-container';
+                const inner = document.createElement('div');
+                inner.className = 'kana-card-inner';
+                inner.onclick = () => {
+                    const flipped = inner.classList.toggle('is-flipped');
+                    speak(flipped ? item.w : item.h, 0.9);
+                };
+                inner.innerHTML = `
+                    <div class="card-front"><span class="text-2xl font-bold text-indigo-600">${item.h}</span></div>
+                    <div class="card-back">
+                        <span class="text-xl">${item.icon || ''}</span>
+                        <div class="text-[10px] font-bold">${item.w || ''}</div>
+                        <div class="text-[9px] opacity-80">${item.cn || ''}</div>
+                    </div>
+                `;
+                container.appendChild(inner);
+                grid.appendChild(container);
+            });
+        }
+
+        function renderLabKeyboard() {
+            const kb = document.getElementById('lab-keyboard');
+            kb.innerHTML = '';
+            fullKana.forEach(item => {
+                if (!item.h) {
+                    const empty = document.createElement('div');
+                    kb.appendChild(empty);
+                    return;
+                }
+                const btn = document.createElement('button');
+                btn.className = 'keyboard-btn bg-white py-3 rounded-lg shadow-sm font-bold text-lg text-slate-700 border-b-2 border-slate-200 hover:bg-indigo-50 active:border-b-0 transition-all';
+                btn.innerText = item.h;
+                btn.onclick = () => addToLab(item.h);
+                kb.appendChild(btn);
+            });
+        }
+
+        function addToLab(char) {
+            speak(char, 1.1);
+            if (labInput.length < 8) {
+                labInput += char;
+                updateLabDisplay();
+            }
+        }
+
+        function backspaceLab() {
+            if (labInput.length > 0) {
+                labInput = labInput.slice(0, -1);
+                updateLabDisplay();
+            }
+        }
+
+        function updateLabDisplay() {
+            document.getElementById('lab-input-display').innerText = labInput;
+        }
+
+        function submitLab() {
+            if (labInput === "") return;
+
+            const match = wordDictionary.find(item => item.jp === labInput);
+            const info = document.getElementById('found-info');
+            const display = document.getElementById('lab-input-display');
+
+            if (match) {
+                speak(match.jp, 0.85);
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                
+                info.innerHTML = `<span class="text-green-600">找到單字了！🥳 <br> <span class="text-sm">「${match.jp}」意思：${match.cn} ${match.icon}</span></span>`;
+                display.classList.add('text-green-500', 'scale-110');
+                
+                totalScore += 50;
+                document.getElementById('score-display').innerText = totalScore;
+
+                setTimeout(() => {
+                    display.classList.remove('text-green-500', 'scale-110');
+                    info.innerText = "";
+                    if (isHintActive) setNewMission();
+                    clearLab();
+                }, 3500);
+            } else {
+                info.innerHTML = `<span class="text-red-500">找錯單字，請重找加油！</span>`;
+                display.classList.add('error-shake', 'text-red-400');
+                
+                setTimeout(() => {
+                    display.classList.remove('error-shake', 'text-red-400');
+                    info.innerText = "";
+                }, 1000);
+            }
+        }
+
+        function clearLab() {
+            labInput = "";
+            updateLabDisplay();
+            document.getElementById('found-info').innerText = "";
+        }
+
+        function toggleHint() {
+            isHintActive = !isHintActive;
+            const hintBox = document.getElementById('hint-box');
+            if (isHintActive) {
+                hintBox.classList.remove('hidden');
+                setNewMission();
+            } else {
+                hintBox.classList.add('hidden');
+            }
+        }
+
+        function setNewMission() {
+            currentMission = wordDictionary[Math.floor(Math.random() * wordDictionary.length)];
+            document.getElementById('hint-text').innerText = `找出「${currentMission.cn}」${currentMission.icon}`;
+        }
+
+        function renderDialogues() {
+            const list = document.getElementById('dialogue-list');
+            list.innerHTML = '';
+            dialogues.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center cursor-pointer hover:bg-indigo-50 transition-all group';
+                card.onclick = () => speak(d.jp, 0.85);
+                card.innerHTML = `
+                    <div>
+                        <div class="font-bold text-lg text-indigo-600">${d.jp}</div>
+                        <div class="text-sm text-slate-500 font-medium">${d.cn}</div>
+                        <div class="text-[10px] text-slate-400 italic">${d.romaji}</div>
+                    </div>
+                    <div class="text-indigo-300 group-hover:text-indigo-500 transition-colors"><i class="fas fa-volume-up fa-lg"></i></div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function speak(text, rate = 0.85) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP';
+            utterance.rate = rate; 
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => 
+                (v.lang === 'ja-JP' || v.lang === 'ja_JP') && 
+                (v.name.includes('Google') || v.name.includes('Microsoft'))
+            );
+
+            if (preferredVoice) utterance.voice = preferredVoice;
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
